@@ -6,13 +6,16 @@ from selenium.webdriver.common.keys import Keys
 import time
 
 
-chromedriver = '/Users/soinseong/Documents/workspace/python/chromedriver'
+# chromedriver = '/Users/soinseong/Documents/workspace/python/chromedriver'
+chromedriver = 'D:/sisworkspace/python/chromedriver'
 driver = webdriver.Chrome(chromedriver)
 
 param1 = '정자역'  # input text로 받을 값
 
+param2 = '%20' + '한식'
+
 # 크롤링할 사이트 호출
-driver.get("https://www.diningcode.com/list.php?query=" + param1)
+driver.get("https://www.diningcode.com/list.php?query=" + param1 + param2)
 
 cnt = 0
 
@@ -25,22 +28,27 @@ def moreData(cnt):
         elem.send_keys(Keys.ENTER)
     return cnt
 
+cnt2 = moreData(cnt)
 
-print("상위 ", moreData(cnt), "건이 조회되었습니다.")
+print("상위 ", cnt2, "건이 조회되었습니다.")
 
 
 time.sleep(1)
 
-zero = driver.find_elements_by_css_selector('#div_list > li')[1:]
+temp = []
+# zero = driver.find_elements_by_css_selector('#div_list > li')[1:]
+zero = driver.find_elements_by_xpath('/html/body/div[3]/div/div[2]/div/div[1]/div[2]/ul/li[(contains(@id, "ad-area"))=false]')
+print("기록중=============================")
 for test in zero:
     try:
-        print(test.find_element_by_class_name("btxt").text, " : ", test.find_element_by_class_name("stxt").text)
-        print("컨셉은 [ ", test.find_element_by_class_name("ctxt").text, " ]")
-        print("점수는 ", test.find_element_by_class_name("point").text)
-        print("=================================")
+        temp.append([test.find_element_by_class_name("btxt").text, test.find_element_by_class_name("stxt").text, test.find_elements_by_class_name("ctxt")[0].text, test.find_elements_by_class_name("ctxt")[1].text, test.find_element_by_class_name("point").text])
+        print(temp)
     except NoSuchElementException:
         continue
-# two = driver.find_element_by_class_name("stxt")
-# one = driver.find_element_by_class_name("btxt")
-# three = driver.find_element_by_class_name("ctxt")
-# four = driver.find_element_by_class_name("point")
+print("==============================기록끝")
+
+# 명시적으로 일정시간을 기다릴 수 있음 (10초 기다림)
+time.sleep(1)
+
+# 크롬 브라우저 닫기 가능함
+driver.quit()
